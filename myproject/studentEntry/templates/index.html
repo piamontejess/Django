@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <style>
+        /* Compatibility fixes */
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+        
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    </style>
+    <title>Student Account System</title>
+</head>
+<body class="bg-blue-100 min-h-screen flex flex-col">
+    <header class="bg-white shadow-md py-4 fixed top-0 left-0 right-0 z-10">
+        <div class="container mx-auto px-4 flex items-center justify-between">
+            <div class="text-2xl font-bold text-gray-800">
+                Student Account System
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="relative w-full max-w-xs flex-shrink-0">
+                    <label for="search" class="sr-only">Search</label>
+                    <input type="text" id="search" class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Search..." title="Search">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1116.65 3.65a7.5 7.5 0 010 10.6z"/>
+                        </svg>
+                    </div>
+                </div>
+                <button class="bg-blue-500 text-white px-4 py-2 rounded flex-shrink-0" onclick="document.getElementById('add_student_modal').showModal()">Add New Student</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 flex-grow pt-16">
+        <div class="pt-11 overflow-x-auto">
+            <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden mt-6">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 border-b border-gray-200 text-left text-sm font-medium text-gray-700">Profile</th>
+                        <th class="px-6 py-3 border-b border-gray-200 text-left text-sm font-medium text-gray-700">Name</th>
+                        <th class="px-6 py-3 border-b border-gray-200 text-left text-sm font-medium text-gray-700">Birthday</th>
+                        <th class="px-6 py-3 border-b border-gray-200 text-left text-sm font-medium text-gray-700">Course</th>
+                        <th class="px-6 py-3 border-b border-gray-200 text-left text-sm font-medium text-gray-700">Year Level</th>
+                        <th class="px-6 py-3 border-b border-gray-200 text-left text-sm font-medium text-gray-700">Email</th>
+                        <th class="px-6 py-3 border-b border-gray-200 text-left text-sm font-medium text-gray-700">Address</th>
+                        <th class="px-6 py-3 border-b border-gray-200 text-center text-sm font-medium text-gray-700">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="studentTableBody" class="bg-white">
+                    {% for student in students %}
+                    <tr id="student-{{ student.id }}">
+                        <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    <img class="h-10 w-10 rounded-full" src="{{ student.image.url }}" alt="{{ student.firstName }} {{ student.lastname }}">
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">{{ student.firstName }} {{ student.lastname }}</div>
+                                    <div class="text-sm text-gray-500">{{ student.studentId }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">{{ student.lastname }} {{ student.firstName }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ student.birthday }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">{{ student.course }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">{{ student.yearLevel }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">{{ student.emailAdd }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">{{ student.address }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200 text-center">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">{{ student.status }}</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <dialog id="add_student_modal" class="modal">
+        <div class="modal-box max-w-2xl bg-gray-100 rounded-lg p-6">
+            <h3 class="font-bold text-lg">Add Student</h3>
+            <p class="py-4">Fill in the student details below and click "Close" to cancel</p>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="col-span-2">
+                        <label for="studentId" class="block text-gray-700">ID Number</label>
+                        <input id="studentId" name="studentId" maxlength="6" oninput="this.value = this.value.replace(/[^0-9]/g, '')" type="text" placeholder="ID Number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                    </div>
+                    <div>
+                        <label for="firstName" class="block text-gray-700">First Name</label>
+                        <input id="firstName" name="firstName" type="text" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" placeholder="First Name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                    </div>
+                    <div>
+                        <label for="lastname" class="block text-gray-700">Last Name</label>
+                        <input id="lastname" name="lastname" type="text" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" placeholder="Last Name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                    </div>
+                    
+                    <div>
+                        <label for="emailAdd" class="block text-gray-700">Email Address</label>
+                        <input id="emailAdd" name="emailAdd" type="email" placeholder="Email Address" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                    </div>
+
+                    <div>
+                        <label for="address" class="block text-gray-700">Address</label>
+                        <input id="address" name="address" type="text" placeholder="Address" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                    </div>
+
+                    <div>
+                        <label for="gender" class="block text-gray-700">Gender</label>
+                        <select name="sex" id="gender" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                            <option disabled selected>Gender</option>
+                            <option>Male</option>
+                            <option>Female</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="birthday" class="block text-gray-700">Birthday</label>
+                        <input type="date" id="birthday" name="birthday" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                    </div>
+                    <div>
+                        <label for="course_name" class="block text-gray-700">Course</label>
+                        <select name="course" id="course_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                            <option disabled selected>Select a Course</option>
+                            <option>Bachelor of Science in Civil Engineering (BSCE)</option>
+                            <option>Bachelor of Science in Computer Engineering (BSCpE)</option>
+                            <option>Bachelor of Science in Electrical Engineering (BSEE)</option>
+                            <option>Bachelor of Science in Electronics Engineering (BSEcE)</option>
+                            <option>Bachelor of Science in Industrial Engineering (BSIE)</option>
+                            <option>Bachelor of Science in Mechanical Engineering (BSME)</option>
+                            <option>Bachelor of Industrial Technology (BIT) - Automotive Technology</option>
+                            <option>Bachelor of Industrial Technology (BIT) - Civil Technology</option>
+                            <option>Bachelor of Industrial Technology (BIT) - Cosmetology</option>
+                            <option>Bachelor of Industrial Technology (BIT) - Drafting Technology</option>
+                            <option>Bachelor of Industrial Technology (BIT) - Electrical Technology</option>
+                            <option>Bachelor of Industrial Technology (BIT) - Electronics Technology</option>
+                            <option>Bachelor of Industrial Technology (BIT) - Food Preparation and Services Technology</option>
+                            <option>Bachelor of Industrial Technology (BIT) - Furniture and Cabinet Making</option>
+                            <option>Bachelor of Industrial Technology (BIT) - Garments Technology</option>
+                            <option>Bachelor of Industrial Technology (BIT) - Interior Design Technology</option>
+                            <option>Bachelor of Industrial Technology (BIT) - Machine Shop Technology</option>
+                            <option>Bachelor of Industrial Technology (BIT) - Power Plant Technology</option>
+                            <option>Bachelor of Industrial Technology (BIT) - Refrigeration and Air-conditioning Technology</option>
+                            <option>Bachelor of Industrial Technology (BIT) - Welding and Fabrication Technology</option>
+                            <option>Bachelor of Arts in Communication (AB Communication)</option>
+                            <option>Bachelor of Science in Business Administration (BSBA) - Human Resource Management</option>
+                            <option>Bachelor of Science in Business Administration (BSBA) - Marketing Management</option>
+                            <option>Bachelor of Science in Information Technology (BSIT)</option>
+                            <option>Bachelor of Science in Psychology (BSPsych)</option>
+                            <option>Bachelor of Elementary Education (BEEd)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="year_level" class="block text-gray-700">Year Level</label>
+                        <select name="yearLevel" id="year_level" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                            <option disabled selected>Year Level</option>
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                        </select>
+                    </div>
+                    <div class="">
+                        <label for="status" class="block text-gray-700">Status</label>
+                        <select name="status" id="status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                            <option disabled selected>Status</option>
+                            <option>Old Student</option>
+                            <option>New Student</option>
+                            <option>Returnee</option>
+                            <option>Transferee</option>
+                        </select>
+                    </div>
+                    <div class="col-span-2">
+                        <label for="image" class="block text-gray-700">Profile Picture</label>
+                        <input type="file" id="image" name="image" accept="image/png, image/gif, image/jpeg, image/jpg, image/bmp, image/webp" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-x-4 mt-4">
+                    <button type="button" class="btn rounded-xl bg-gray-500 text-white px-4 py-2" onclick="document.getElementById('add_student_modal').close()">Close</button>
+                    <button class="btn btn-primary rounded-xl bg-blue-500 text-white px-4 py-2" type="submit">Add Student</button>
+                </div>
+                {% if error_messages %}
+                <p class="text-red-400 mx-4 flex justify-center mt-2">{{ error_messages }}</p>
+                {% endif %}
+            </form>
+        </div>
+    </dialog>
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('search');
+
+        searchInput.addEventListener('input', function() {
+            const searchValue = searchInput.value.toLowerCase();
+            const studentRows = document.querySelectorAll('#studentTableBody tr');
+
+            studentRows.forEach(function(row) {
+                const studentId = row.querySelector('.text-gray-500').textContent.toLowerCase();
+                const course = row.querySelector('.whitespace-nowrap:nth-child(4)').textContent.toLowerCase();
+                const studentName = row.querySelector('.font-medium').textContent.toLowerCase();
+                if (studentId.includes(searchValue) || course.includes(searchValue) || studentName.includes(searchValue)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const emailInput = document.getElementById('emailAdd');
+
+        emailInput.addEventListener('input', function() {
+            const email = emailInput.value;
+            const isValidFormat = validateEmailFormat(email);
+            if (!isValidFormat) {
+                emailInput.setCustomValidity('Invalid email address format.');
+            } else {
+                emailInput.setCustomValidity('');
+            }
+        });
+    });
+
+    function validateEmailFormat(email) {
+        // Email validation regex pattern
+        const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return pattern.test(email);
+    }
+</script>
+</html>

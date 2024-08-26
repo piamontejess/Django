@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <title>View Students</title>
+    <style>
+        /* Compatibility fixes */
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+        
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <header class="bg-white shadow-md py-4 fixed top-0 left-0 right-0 z-10">
+        <div class="container mx-auto px-4 flex items-center justify-between">
+            <div class="text-2xl font-bold text-gray-800">
+                Student Account System
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="{% url 'index' %}" class="bg-blue-500 text-white px-4 py-2 rounded inline-block" aria-label="Add New Student">Add New Student</a>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container mx-auto px-4 flex-grow pt-16">
+        <h2 class="text-2xl font-bold mb-6">Students List</h2>
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <table class="min-w-full bg-white" aria-labelledby="students-list-heading">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 border-b border-gray-200 text-left text-sm font-medium text-gray-700">Profile</th>
+                        <th class="px-6 py-3 border-b border-gray-200 text-left text-sm font-medium text-gray-700">Name</th>
+                        <th class="px-6 py-3 border-b border-gray-200 text-left text-sm font-medium text-gray-700">Birthday</th>
+                        <th class="px-6 py-3 border-b border-gray-200 text-left text-sm font-medium text-gray-700">Course</th>
+                        <th class="px-6 py-3 border-b border-gray-200 text-left text-sm font-medium text-gray-700">Year Level</th>
+                        <th class="px-6 py-3 border-b border-gray-200 text-left text-sm font-medium text-gray-700">Email</th>
+                        <th class="px-6 py-3 border-b border-gray-200 text-left text-sm font-medium text-gray-700">Address</th>
+                        <th class="px-6 py-3 border-b border-gray-200 text-center text-sm font-medium text-gray-700">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for student in students %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    <img class="h-10 w-10 rounded-full" src="{{ student.image.url }}" alt="{{ student.firstName }} {{ student.lastname }}'s profile picture">
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">{{ student.firstName }} {{ student.lastname }}</div>
+                                </div>
+                            </div>
+                        </td>
+                   
+                        <td class="px-6 py-4 whitespace-nowrap">{{ student.lastname }}, {{ student.firstName }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ student.birthday }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ student.course }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ student.yearLevel }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ student.emailAdd }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ student.address }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">{{ student.status }}</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+</html>
